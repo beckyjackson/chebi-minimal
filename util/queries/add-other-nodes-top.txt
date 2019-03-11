@@ -1,0 +1,11 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+DELETE {}
+INSERT { ?newClass a owl:Class ;
+                   rdfs:subClassOf ?s ;
+				   rdfs:label ?newLabel . }
+WHERE {
+	VALUES ?s {
+	

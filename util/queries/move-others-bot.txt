@@ -1,0 +1,7 @@
+	
+	}
+	?child rdfs:subClassOf ?s .
+	FILTER NOT EXISTS { ?next rdfs:subClassOf ?child }
+	BIND(IRI(CONCAT(STR(?s), "-other")) AS ?newClass)
+	FILTER (?child != ?newClass)
+}

@@ -1,0 +1,12 @@
+CHEBI:24431 # chemical entity
+CHEBI:50906 # role
+CHEBI:60004 # mixture
+CHEBI:50906-compound # compound
+CHEBI:33521 # metal atom
+CHEBI:24433 # group
+CHEBI:33250 # atom
+CHEBI:23367 # molecular entity
+CHEBI:24835 # inorganic molecular entity
+CHEBI:50860 # organic molecular entity
+CHEBI:16646 # carbohydrate
+http://iedb.org/source/orphaned_molecular_entity

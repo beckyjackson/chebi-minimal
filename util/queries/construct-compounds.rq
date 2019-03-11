@@ -1,0 +1,28 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+CONSTRUCT {
+    ?topCompound a owl:Class ;
+    			 rdfs:label "compound" .
+	?newIRI a owl:Class ;
+	        rdfs:subClassOf ?newParent ;
+			owl:equivalentClass [ rdf:type owl:Restriction ;
+			                      owl:onProperty obo:RO_0000087 ;
+			                      owl:someValuesFrom ?s ] ;
+	        rdfs:label ?newLabel .
+} WHERE {
+	?s rdfs:subClassOf* obo:CHEBI_50906 ;
+       rdfs:subClassOf ?parent ;
+	   rdfs:label ?label .
+	FILTER (?s != obo:CHEBI_50906)
+	BIND (REPLACE(?label, " role", "", "i") AS ?l1)
+	BIND (REPLACE(?l1, "role", "", "i") AS ?l2)
+	BIND (CONCAT(?l2, " compound") AS ?newLabel)
+	BIND (IRI(CONCAT(STR(?s), "-compound")) AS ?newIRI)
+	BIND (IRI(CONCAT(STR(?parent), "-compound")) AS ?newParent)
+	BIND (IRI(CONCAT(STR(obo:CHEBI_50906), "-compound")) AS ?topCompound)
+	BIND (BNODE() AS ?bnode)
+}

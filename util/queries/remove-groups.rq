@@ -1,0 +1,12 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?s WHERE {
+	?s rdfs:subClassOf* obo:CHEBI_23367 ; # molecular entity
+	   rdfs:label ?label .
+	FILTER NOT EXISTS { ?s rdfs:subClassOf* obo:CHEBI_24835 } # inorganic
+	FILTER NOT EXISTS { ?s rdfs:subClassOf* obo:CHEBI_50860 } # organic
+	FILTER NOT EXISTS { ?s oboInOwl:id "CHEBI:23367" }
+	FILTER (!STRSTARTS(?label, ">>"))
+}

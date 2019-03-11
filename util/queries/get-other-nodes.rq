@@ -1,0 +1,13 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?s WHERE {
+	?child rdfs:subClassOf ?s .
+	?next rdfs:subClassOf ?child .
+	?bottom rdfs:subClassOf ?s .
+	?s rdfs:label ?label .
+	FILTER NOT EXISTS { ?another rdfs:subClassOf ?bottom }
+	BIND(CONCAT(STR(?s), "-other") AS ?newClass)
+	BIND(CONCAT("other ", STR(?label)) AS ?newLabel)
+}
+GROUP BY ?s
+HAVING (COUNT(?bottom) > 4)

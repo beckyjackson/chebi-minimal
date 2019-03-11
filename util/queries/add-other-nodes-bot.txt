@@ -1,0 +1,6 @@
+
+	}
+	?s rdfs:label ?label .
+	BIND(IRI(CONCAT(STR(?s), "-other")) AS ?newClass)
+	BIND(CONCAT("other ", STR(?label)) AS ?newLabel)
+}

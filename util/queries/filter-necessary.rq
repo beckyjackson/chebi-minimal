@@ -1,0 +1,22 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT ?s WHERE {
+	{   ?child rdfs:subClassOf* ?s .
+	    FILTER (?child != ?s)
+	    ?child rdfs:label ?childLabel .
+	    FILTER(STRSTARTS(?childLabel, ">>"))
+	    FILTER(!isBlank(?s))
+	} UNION {
+		?s rdfs:subClassOf* obo:CHEBI_50906 . # compound
+		FILTER (!isBlank(?s))
+	} UNION {
+	    ?s rdfs:label ?label .
+	    FILTER (STRSTARTS(?label, ">>"))
+	} UNION {
+	    ?s a owl:ObjectProperty .
+	}
+}
