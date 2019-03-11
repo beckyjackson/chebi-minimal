@@ -26,9 +26,6 @@ QRS = util/queries
 RES = build/results
 SCRP = ./util/scripts
 
-# TODO:
-# email Randi list of recategorized 'other molecular entity' children
-
 # -------------------- OVERVIEW -------------------- #
 
 # 1 Extract entities from ChEBI using the $(TERMS) and BOT method of extraction. 
