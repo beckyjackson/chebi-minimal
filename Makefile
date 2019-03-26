@@ -28,26 +28,13 @@ SCRP = ./util/scripts
 
 # -------------------- OVERVIEW -------------------- #
 
-# 1 Extract entities from ChEBI using the $(TERMS) and BOT method of extraction. 
-#   Add >> to the labels of any terms in the seed set. Separate the 'role' 
-#   hierarchy into its own file and remove it from the ontology to be processed.
-
-# 2 Remove any unnecessary grouping entities, and bottom-level classes that were
-#   not part of the seed set. Minimize, collapsing the hierarchy, based on $(T).
-
-# 3 Add 'other' nodes to capture children who have been orphaned by minimizing.
-#   These are all the bottom-level classes that end up under major grouping 
-#   classes, such as 'organic molecular entity'.
-
-# 4 Create a 'compound' hierarchy that mirrors the 'role' hierarchy. Add logic 
-#   to connect chemical entities to compound parents. 
-
-# 5 Merge all parts (chemical entities, roles, and compounds) and add counts to 
-#   the labels. The counts show the number of seed-set descendants of a class.
-
-# 6 Clean up the merged ontology by removing anything NOT under chemical entity,
-#   role, or compound. Also clean up the compounds by removing any compound with 
-#   no children.
+# 1 Retrieve the ChEBI module
+# 2 Remove unnecessary entities
+# 3 Add 'other' nodes
+# 4 Create the compound hierarchy
+# 5 Compile components and add counts to labels
+# 6 Validate
+# 7 Clean up and convert to OWL
 
 all: chebi-minimal.owl
 
@@ -68,11 +55,14 @@ build/chebi.owl:
 	curl -Lk http://purl.obolibrary.org/obo/chebi.owl > $@
 
 # Extract with min intermediates using BOT
+# Also remove the 'epitope' role
+# Then ensure role inheritance is maintained
 .INTERMEDIATE: build/chebi-module.ttl
 build/chebi-module.ttl: build/chebi.owl $(TERMS) | build
 	@echo "Extracting $(word 2,$^) from $<" && \
 	$(ROBOT) extract --input $< --term-file $(word 2,$^)\
 	 --method BOT query --update $(QRS)/add-label-prefix.ru \
+	remove --term CHEBI:53000 \
 	query --update $(QRS)/add-roles-to-children.ru --output $@
 
 # Separate the roles into own file (with role logic)
@@ -108,7 +98,6 @@ $(RES)/remove-groups.tsv: build/chebi-chemicals.ttl | build
 	sed -i '' '1d;s/<//g;s/>//g' $@
 
 # Make a precious term-file
-# Flag upper-level precious terms ($)
 .INTERMEDIATE: build/precious.txt
 build/precious.txt: src/precious.txt $(TERMS) 
 	@cat $^ > $@
