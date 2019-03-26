@@ -67,6 +67,7 @@ build:
 
 .PRECIOUS: build/chebi.owl
 build/chebi.owl:
+	@echo "Retreiving ChEBI" && \
 	curl -Lk http://purl.obolibrary.org/obo/chebi.owl > $@
 
 # Extract with min intermediates using BOT
@@ -193,15 +194,23 @@ build/chebi-cleaned.ttl: build/chebi-merged.ttl
 	@echo "Rehoming 'other molecular entity' children" && \
 	$(SCRP)/rehome_other_entities.py $< $@
 
+# Recreate the inorganics based on element
+# use ROBOT to remove 'atom' so that it is removed from anonymous parents
+build/chebi-elements.ttl: build/chebi-cleaned.ttl
+	@echo "Organizing inogranics by element" && \
+	$(SCRP)/add_elements.py $< $@ && \
+	echo "Removing 'atom'" && \
+	$(ROBOT) remove --input $@ --term CHEBI:33250 --output $@
+
 # Get the counts of important (>>) subclasses
 .INTERMEDIATE: $(RES)/child-counts.tsv
-$(RES)/child-counts.tsv: build/chebi-cleaned.ttl
+$(RES)/child-counts.tsv: build/chebi-elements.ttl
 	@echo "Getting child counts, see $@" && \
 	$(ROBOT) query --input $< --query $(QRS)/child-counts.rq $@
 
 # Add the counts to the labels
 .INTERMEDIATE: build/chebi-minimal.ttl
-build/chebi-minimal.ttl: build/chebi-cleaned.ttl $(RES)/child-counts.tsv
+build/chebi-minimal.ttl: build/chebi-elements.ttl $(RES)/child-counts.tsv
 	@echo "Adding child counts to labels" && \
 	$(SCRP)/add_count.py $^ $@
 
