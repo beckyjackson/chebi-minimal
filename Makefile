@@ -21,6 +21,11 @@ TERMS := $(or $(TERMS),epitopes.txt)
 # Threshold for minimizing
 T := $(or $(T),10)
 
+# Set of NCBITaxon terms
+NCBITAXON_TERMS = build/ncbitaxon-terms.txt
+# Map of epitopes to organisms 
+EPITOPE_ORGS = epitope_organisms.csv
+
 # Important directories
 QRS = util/queries
 RES = build/results
@@ -235,7 +240,43 @@ build/chebi-cleaned.ttl: build/chebi-elements.ttl
 	 --select "classes" --trim true \
 	remove --term-file src/remove-after-others.txt reduce --output $@ 
 
-# -------------------- STEP 6: Add counts -------------------- #
+# -------------------- STEP 6: Add source hierarchy -------------------- #
+
+build/ncbitaxon.owl:
+	curl -Lk -o $@ http://purl.obolibrary.org/obo/ncbitaxon.owl
+
+.INTERMEDIATE: build/ontie-module.ttl
+build/ontie-module.ttl: $(EPITOPE_ORGS)
+	@$(SCRP)/add_iedb_organisms.py $< $(NCBITAXON_TERMS) $@
+
+# Create a subset with just the required terms
+.INTERMEDIATE: build/ncbitaxon-module.ttl
+build/ncbitaxon-module.ttl: build/ncbitaxon.owl build/ontie-module.ttl $(NCBITAXON_TERMS)
+	@echo "Generating $@" && \
+	$(ROBOT) merge --input $< --input $(word 2,$^) \
+	extract --intermediates minimal --method MIREOT\
+	 --upper-term NCBITaxon:1 --lower-terms $(word 3,$^) --output $@
+
+# Mirror the hierachy with "product of"
+.INTERMEDIATE: build/ncbitaxon-sources.ttl
+build/ncbitaxon-sources.ttl: build/ncbitaxon-module.ttl
+	@echo "Generating 'product of' hierarchy" && \
+	$(ROBOT) query --input $< --query $(QRS)/construct-orgs.rq $@
+
+# Merge NCBITaxon module and 'product of' hierarchy into ChEBI
+.INTERMEDIATE: build/chebi-organisms.ttl
+build/chebi-organisms.ttl: build/chebi-cleaned.ttl build/ncbitaxon-sources.ttl \
+build/ncbitaxon-module.ttl
+	@echo "Merging $^" && \
+	$(ROBOT) merge --input $< --input $(word 2,$^) --input $(word 3,$^) --output $@
+
+# add the 'produced by' axioms and reason to generate full hierarchy
+.INTERMEDIATE: build/chebi-sources.ttl
+build/chebi-sources.ttl: build/chebi-organisms.ttl $(EPITOPE_ORGS)
+	@$(SCRP)/add_source_organisms.py $^ $@ && \
+	$(ROBOT) reason --input $@ --output $@
+
+# -------------------- STEP 7: Add counts -------------------- #
 
 # Get the references
 .INTERMEDIATE: build/chebi-references.ttl
@@ -254,7 +295,7 @@ build/chebi-minimal.ttl: build/chebi-references.ttl $(RES)/child-counts.tsv
 	@echo "Adding child counts to labels" && \
 	$(SCRP)/add_count.py $^ $@
 
-# -------------------- STEP 7: Validate -------------------- #
+# -------------------- STEP 8: Validate -------------------- #
 
 # Ensure that all of our input terms are in the final ontology
 .PHONY: validate
@@ -262,7 +303,7 @@ validate: $(TERMS) build/chebi-minimal.ttl
 	@echo "Validating that all terms from $< are in $(word 2,$^)" && \
 	$(SCRP)/validate.py $^
 
-# -------------------- STEP 8: Clean up -------------------- #
+# -------------------- STEP 9: Clean up -------------------- #
 
 # Potentially annotate in the future here
 # Remove everything that is not under 'chemical entity', 'compound', or 'role'
