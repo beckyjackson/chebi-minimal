@@ -26,15 +26,18 @@ QRS = util/queries
 RES = build/results
 SCRP = ./util/scripts
 
+# Pull annotations from ChEBI and merge them in
+
 # -------------------- OVERVIEW -------------------- #
 
 # 1 Retrieve the ChEBI module
 # 2 Remove unnecessary entities
 # 3 Add 'other' nodes
 # 4 Create the compound hierarchy
-# 5 Compile components and add counts to labels
-# 6 Validate
-# 7 Clean up and convert to OWL
+# 5 Compile components and rehome 'other' entities
+# 6 Add counts to labels
+# 7 Validate
+# 8 Clean up and convert to OWL
 
 all: chebi-minimal.owl
 
@@ -54,21 +57,50 @@ build/chebi.owl:
 	@echo "Retreiving ChEBI" && \
 	curl -Lk http://purl.obolibrary.org/obo/chebi.owl > $@
 
-# Extract with min intermediates using BOT
-# Also remove the 'epitope' role
-# Then ensure role inheritance is maintained
+.INTERMEDIATE: build/annotations.ttl
+build/annotations.ttl: build/chebi.owl
+	$(ROBOT) filter --input $< --select "annotation-properties annotations" --output $@
+
+CURATED_UPDATES := $(foreach U,$(shell find $(QRS)/curated -name \*.ru -print), --update $(U))
+
+# Extract our subset from ChEBI
+# Annotate labels of important terms with >>
+# Perform manually-curated clean-up of roles
 .INTERMEDIATE: build/chebi-module.ttl
 build/chebi-module.ttl: build/chebi.owl $(TERMS) | build
 	@echo "Extracting $(word 2,$^) from $<" && \
 	$(ROBOT) extract --input $< --term-file $(word 2,$^)\
 	 --method BOT query --update $(QRS)/add-label-prefix.ru \
-	remove --term CHEBI:53000 \
-	query --update $(QRS)/add-roles-to-children.ru --output $@
+	remove --term CHEBI:53000 --output $@
+
+# Use a template to add in new nodes
+.INTERMEDIATE: build/chebi-curated.ttl
+build/chebi-curated.ttl: build/chebi-module.ttl src/curated.csv
+	$(ROBOT) template --input $< --merge-before --template $(word 2,$^) --output $@
+
+# Run updates to remove and replace roles
+.INTERMEDIATE: build/chebi-updated.ttl
+build/chebi-updated.ttl: build/chebi-curated.ttl
+	@echo "Running manually-curated updates on $<" && \
+	$(ROBOT) query --input $< --update $(QRS)/add-roles-to-children.ru\
+	 --update $(QRS)/curated/remove-roles.ru\
+	 --update $(QRS)/curated/replace-drug-roles.ru\
+	 --update $(QRS)/curated/replace-app-roles.ru\
+	 --update $(QRS)/add-children-roles.ru  --output $@
+
+# Remove manually-curated nodes
+.INTERMEDIATE: build/chebi-removed.ttl
+build/chebi-removed.ttl: build/chebi-updated.ttl
+	@echo "Removing extra nodes from $<" && \
+	$(ROBOT) remove --input $< --term-file src/manual-remove.txt \
+	remove --term-file src/manual-remove-descendants.txt --select "descendants" \
+	remove --term-file src/manual-remove-plus-descendants.txt\
+	 --select "self descendants" --output $@
 
 # Separate the roles into own file (with role logic)
 # Remove logic for any non-roles without >>
 .INTERMEDIATE: build/chebi-roles.ttl
-build/chebi-roles.ttl: build/chebi-module.ttl
+build/chebi-roles.ttl: build/chebi-removed.ttl
 	@echo "Separating role hierarchy into $@" && \
 	$(ROBOT) filter --input $< --term CHEBI:50906\
 	 --select "self descendants annotations" --trim false \
@@ -76,7 +108,7 @@ build/chebi-roles.ttl: build/chebi-module.ttl
 
 # Keep chemical entities in their own file
 .INTERMEDIATE: build/chebi-chemicals.ttl
-build/chebi-chemicals.ttl: build/chebi-module.ttl
+build/chebi-chemicals.ttl: build/chebi-removed.ttl
 	@echo "Separating chemical entity hierarchy into $@" && \
 	$(ROBOT_MIN) remove --input $< --term CHEBI:50906\
 	 --select "self descendants" --output $@
@@ -115,11 +147,11 @@ $(RES)/remove-molecular-entities.txt: build/chebi-chemicals.ttl
 build/chebi-minimized.ttl: build/chebi-chemicals.ttl $(RES)/filter-necessary.tsv \
 $(RES)/remove-groups.tsv build/precious.txt $(RES)/remove-molecular-entities.txt
 	@echo "Removing unnecessary terms from $<" && \
-	$(ROBOT_MIN) filter --input $< --term-file $(word 2,$^)\
+	$(ROBOT_MIN) filter --input $< --term-file $(word 2,$^) --term CHEBI:33659 \
 	 --select "self annotations" --trim true --preserve-structure true \
 	remove --term-file $(word 3,$^) --trim true --preserve-structure true \
 	remove --term CHEBI:88184 --term CHEBI:72695 --term CHEBI:33285\
-	 --term CHEBI:33561 --trim true --preserve-structure true \
+	 --term CHEBI:33561 --term CHEBI:23367 --trim true --preserve-structure true \
 	remove --term-file $(word 5,$^) --trim true --preserve-structure true \
 	minimize --threshold $(T) --precious $(word 4,$^) reduce --output $@
 
@@ -161,7 +193,7 @@ build/compounds.ttl: build/chebi-roles.ttl
 	@echo "Creating compound hierarchy from $<" && \
 	$(ROBOT) query --input $< --query $(QRS)/construct-compounds.rq $@
 
-# -------------------- STEP 5: compile -------------------- #
+# -------------------- STEP 5: Compile -------------------- #
 
 # Merge everything together
 # Remove assertions of owl:Thing
@@ -172,35 +204,57 @@ build/compounds.ttl build/precious.txt
 	@echo "Merging: $^" && \
 	$(ROBOT_MIN) merge --input $< --input $(word 2,$^)\
 	 --input $(word 3,$^) --input src/logic.ttl \
-	remove --term owl:Thing reduce reason --output $@
+	reduce reason --output $@
 
 # Rehome children of 'other molecular entity' based on their chemical formula
 # If there is a carbon in the formula, it belongs in 'organic molecular entity'
-build/chebi-cleaned.ttl: build/chebi-merged.ttl
+.INTERMEDIATE: build/chebi-rehomed.ttl
+build/chebi-rehomed.ttl: build/chebi-merged.ttl
 	@echo "Rehoming 'other molecular entity' children" && \
 	$(SCRP)/rehome_other_entities.py $< $@
 
 # Recreate the inorganics based on element
-# use ROBOT to remove 'atom' so that it is removed from anonymous parents
-build/chebi-elements.ttl: build/chebi-cleaned.ttl
-	@echo "Organizing inogranics by element" && \
-	$(SCRP)/add_elements.py $< $@ && \
-	echo "Removing 'atom'" && \
-	$(ROBOT) remove --input $@ --term CHEBI:33250 --output $@
+.INTERMEDIATE: build/chebi-elements.ttl
+build/chebi-elements.ttl: build/chebi-rehomed.ttl
+	@echo "Organizing elements of $<" && \
+	$(SCRP)/add_elements.py $< $@
+
+.INTERMEDIATE: build/chebi-cleaned.ttl
+build/chebi-cleaned.ttl: build/chebi-elements.ttl
+	@echo "Cleaning $<" && \
+	$(ROBOT) remove --input $< --term CHEBI:33521 \
+	query --update $(QRS)/curated/carb-derivative-update.ru \
+	query --update $(QRS)/curated/clean-galacto-and-gluco.ru \
+	query --update $(QRS)/curated/merge-carb-and-derivative.ru \
+	query --update $(QRS)/clean-childless.ru \
+	query --update $(QRS)/remove-other-parents.ru \
+	query --update $(QRS)/add-other-logic.ru \
+	query --update $(QRS)/curated/organic-children.ru \
+	remove --term CHEBI:24431 --term CHEBI:50906 --term CHEBI:50906-compound \
+     --term CHEBI:23367-other --select "self descendants" --select "complement"\
+	 --select "classes" --trim true \
+	remove --term-file src/remove-after-others.txt reduce --output $@ 
+
+# -------------------- STEP 6: Add counts -------------------- #
+
+# Get the references
+.INTERMEDIATE: build/chebi-references.ttl
+build/chebi-references.ttl: 
+	python $(SCRP)/add_references.py build/chebi-cleaned.ttl $@
 
 # Get the counts of important (>>) subclasses
 .INTERMEDIATE: $(RES)/child-counts.tsv
-$(RES)/child-counts.tsv: build/chebi-elements.ttl
+$(RES)/child-counts.tsv: build/chebi-references.ttl
 	@echo "Getting child counts, see $@" && \
 	$(ROBOT) query --input $< --query $(QRS)/child-counts.rq $@
 
 # Add the counts to the labels
 .INTERMEDIATE: build/chebi-minimal.ttl
-build/chebi-minimal.ttl: build/chebi-elements.ttl $(RES)/child-counts.tsv
+build/chebi-minimal.ttl: build/chebi-references.ttl $(RES)/child-counts.tsv
 	@echo "Adding child counts to labels" && \
 	$(SCRP)/add_count.py $^ $@
 
-# -------------------- STEP 6: validate -------------------- #
+# -------------------- STEP 7: Validate -------------------- #
 
 # Ensure that all of our input terms are in the final ontology
 .PHONY: validate
@@ -208,19 +262,33 @@ validate: $(TERMS) build/chebi-minimal.ttl
 	@echo "Validating that all terms from $< are in $(word 2,$^)" && \
 	$(SCRP)/validate.py $^
 
-# -------------------- STEP 7: clean up -------------------- #
+# -------------------- STEP 8: Clean up -------------------- #
 
 # Potentially annotate in the future here
 # Remove everything that is not under 'chemical entity', 'compound', or 'role'
 # Run update to remove compounds AND others with no children (post reasoning)
 # Run update to remove the 'other' alternative hierarchy and add disjoint axioms
 .PRECIOUS: chebi-minimal.owl
-chebi-minimal.owl: build/chebi-minimal.ttl | validate
-	@echo "Cleaning $<" && \
-	$(ROBOT) query --input $< --update $(QRS)/clean-childless.ru \
-	query --update $(QRS)/remove-other-parents.ru \
-	query --update $(QRS)/add-other-logic.ru \
-	remove --term CHEBI:24431 --term CHEBI:50906 --term CHEBI:50906-compound \
-     --term CHEBI:23367-other --select "self descendants" --select "complement"\
-	 --select "classes" --trim true --output $@ \
+chebi-minimal.owl: build/chebi-minimal.ttl build/annotations.ttl | validate
+	@echo "Merging $^" && \
+	$(ROBOT) merge --input $< --input $(word 2,$^) --output $@ \
 	&& echo "Created $@"
+
+
+# -------------------- Reports -------------------- #
+
+chebi-minimal.ttl: 
+	$(ROBOT) convert --input chebi-minimal.owl --output $@
+
+# requires epitope_table.csv
+drugs: drug_details.csv
+drug_details.csv: chebi-minimal.ttl
+	$(SCRP)/generate_spreadsheet.py CHEBI:23888-compound chebi-minimal.ttl epitope_table.csv $@
+
+apps: app_details.csv
+app_details.csv: chebi-minimal.ttl
+	$(SCRP)/generate_spreadsheet.py CHEBI:33232-compound chebi-minimal.ttl epitope_table.csv $@ CHEBI:23888-compound
+
+carbs: carb_details.csv
+carb_details.csv: chebi-minimal.ttl
+	$(SCRP)/generate_spreadsheet.py CHEBI:78616 chebi-minimal.ttl epitope_table.csv $@

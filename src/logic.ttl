@@ -12,50 +12,27 @@
 #    Classes
 #################################################################
 
-###  http://purl.obolibrary.org/obo/CHEBI_23367
-<http://purl.obolibrary.org/obo/CHEBI_23367> rdf:type owl:Class ;
-                                             owl:equivalentClass [ rdf:type owl:Class ;
-                                                                   owl:unionOf ( <http://purl.obolibrary.org/obo/CHEBI_24835>
-                                                                                 <http://purl.obolibrary.org/obo/CHEBI_50860>
-                                                                               )
-                                                                 ] ;
-                                             rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_24431> ;
-                                             owl:disjointWith <http://purl.obolibrary.org/obo/CHEBI_24433> ,
-                                                              <http://purl.obolibrary.org/obo/CHEBI_33250> .
-
-
 ###  http://purl.obolibrary.org/obo/CHEBI_24431
-<http://purl.obolibrary.org/obo/CHEBI_24431> rdf:type owl:Class ;
-                                             owl:equivalentClass [ rdf:type owl:Class ;
-                                                                   owl:unionOf ( <http://purl.obolibrary.org/obo/CHEBI_23367>
-                                                                                 <http://purl.obolibrary.org/obo/CHEBI_24433>
-                                                                                 <http://purl.obolibrary.org/obo/CHEBI_33250>
-                                                                                 <http://purl.obolibrary.org/obo/CHEBI_60004>
-                                                                               )
-                                                                 ] .
+<http://purl.obolibrary.org/obo/CHEBI_24431> rdf:type owl:Class .
 
 
 ###  http://purl.obolibrary.org/obo/CHEBI_24433
 <http://purl.obolibrary.org/obo/CHEBI_24433> rdf:type owl:Class ;
                                              rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_24431> ;
-                                             owl:disjointWith <http://purl.obolibrary.org/obo/CHEBI_60004> .
+                                             owl:disjointWith <http://purl.obolibrary.org/obo/CHEBI_24835> ,
+                                                              <http://purl.obolibrary.org/obo/CHEBI_50860> ,
+                                                              <http://purl.obolibrary.org/obo/CHEBI_60004> .
 
 
 ###  http://purl.obolibrary.org/obo/CHEBI_24835
 <http://purl.obolibrary.org/obo/CHEBI_24835> rdf:type owl:Class ;
-                                             rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_23367> ;
-                                             owl:disjointWith <http://purl.obolibrary.org/obo/CHEBI_50860> .
-
-
-###  http://purl.obolibrary.org/obo/CHEBI_33250
-<http://purl.obolibrary.org/obo/CHEBI_33250> rdf:type owl:Class ;
                                              rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_24431> ;
-                                             owl:disjointWith <http://purl.obolibrary.org/obo/CHEBI_60004> .
+                                             owl:disjointWith <http://purl.obolibrary.org/obo/CHEBI_50860> .
 
 
 ###  http://purl.obolibrary.org/obo/CHEBI_50860
 <http://purl.obolibrary.org/obo/CHEBI_50860> rdf:type owl:Class ;
-                                             rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_23367> .
+                                             rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_24431> .
 
 
 ###  http://purl.obolibrary.org/obo/CHEBI_60004

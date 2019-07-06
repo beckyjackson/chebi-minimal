@@ -47,8 +47,15 @@ def find_organics(gin):
 	print('Querying for \'organic\' and \'compound\' entities')
 	query = '''SELECT DISTINCT ?s ?label WHERE {
 				  ?s rdfs:subClassOf* <http://purl.obolibrary.org/obo/CHEBI_23367> .
-				  ?s rdfs:label ?label 
-				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_23367>)}'''
+				  ?s rdfs:label ?label .
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_23367>)
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_33659>)
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_25710>)
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_36963>)
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_35352>)
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_33261>)
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_38700>)
+				  FILTER (?s != <http://purl.obolibrary.org/obo/CHEBI_50047>) }'''
 	qres = gin.query(query)
 	print('%d entities found' % len(qres))
 	remove = []
@@ -57,7 +64,7 @@ def find_organics(gin):
 		label = row.label
 		if '>>' not in label \
 		and 'molecular entity' not in label \
-		and ('organo' in label or 'organic' in label):
+		and 'organic' in label:
 			remove.append(iri)
 		elif 'compound' in label and '>>' not in label:
 			remove.append(iri)

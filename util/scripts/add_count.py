@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import rdflib, sys
+import rdflib, re, sys
 from rdflib import URIRef, RDFS, Literal, XSD
 
 def main(args):
@@ -15,7 +15,11 @@ def main(args):
 			iri = line.split('\t')[0].strip().strip('>').strip('<')
 			old_label = line.split('\t')[1].strip().strip('"')
 			children = line.split('\t')[2].strip()
-			label = '%s [%s]' % (old_label, children)
+			if re.search(r'.*\[[0-9]*a [0-9]*r\]$', old_label):
+				old_label = old_label.rstrip(']')
+				label = '%s %sd]' % (old_label, children)
+			else:
+				label = '%s [%sd]' % (old_label, children)
 			entries[iri] = label
 
 	print('Loading %s' % ontology)

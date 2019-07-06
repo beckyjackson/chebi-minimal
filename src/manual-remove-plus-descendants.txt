@@ -1,0 +1,6 @@
+CHEBI:35942 # neurotransmitter agent
+CHEBI:51061 # hormone receptor modulator
+CHEBI:35846 # renal agent
+CHEBI:35498 # diuretic
+CHEBI:64857 # cosmetic
+CHEBI:27780 # detergent

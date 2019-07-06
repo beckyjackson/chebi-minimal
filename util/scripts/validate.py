@@ -18,6 +18,10 @@ def main(args):
 
 	ok = True
 	for p in precious:
+		if p == "http://purl.obolibrary.org/obo/CHEBI_50699":
+			continue
+		elif p == "http://purl.obolibrary.org/obo/CHEBI_35267":
+			continue
 		uri = URIRef(p)
 		trps = gin.triples((uri, None, None))
 		if not trps:

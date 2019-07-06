@@ -1,0 +1,10 @@
+CHEBI:36544-other # other sialodiosylceramide
+CHEBI:36543-other # other sialoteetrasylceramide
+CHEBI:24385-other # other glycoglycerolipid
+CHEBI:26829-other # other sulfoglycolipid
+CHEBI:22485-other # other glucosamine oligosaccharide
+CHEBI:22484-other # other galactosamine oligosaccharide
+CHEBI:16646 # carbohydrate
+CHEBI:63299 # carbohydrate derivative
+CHEBI:50699 # oligosaccharide
+CHEBI:50699-other # other oligosaccharide

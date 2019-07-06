@@ -1,0 +1,76 @@
+CHEBI:60809 # adjuvant
+CHEBI:60807 # anaesthesia adjuvant
+CHEBI:50847 # immunological adjuvant
+CHEBI:33295 # diagnostic agent
+CHEBI:37334 # diagnostic imaging agent
+CHEBI:37338 # radioopaque medium
+CHEBI:38870 # inhalation anaesthetic
+CHEBI:38877 # intravenous anaesthetic
+CHEBI:48425 # topical anaesthetic
+CHEBI:48422 # angiogenesis inhibitor
+CHEBI:49201 # anti-ulcer drug
+CHEBI:66956 # antidyskinesia agent
+CHEBI:48407 # antiparkinson drug
+CHEBI:50919 # antiemetic
+CHEBI:38068 # antimalarial
+CHEBI:38068 # EC 3.2.1.18 (exo-alpha-sialidase) inhibitor
+CHEBI:59886 # HIV fusion inhibitor
+CHEBI:38956 # ectoparasiticide
+CHEBI:35820 # antiprotozoal drug
+CHEBI:64915 # antiplasmodial drug
+CHEBI:50685 # antitrichomonal drug
+CHEBI:48218 # antiseptic drug
+CHEBI:35841 # uricosuric drug
+CHEBI:50646 # bone density conservation agent
+CHEBI:88188 # drug allergen
+CHEBI:50503 # laxative
+CHEBI:66981 # ophthalmology drug
+CHEBI:39456 # antiglaucoma drug
+CHEBI:50267 # proteective agent
+CHEBI:50247 # antidote
+CHEBI:90755 # antidote to opioid poisoning
+CHEBI:77307 # cardioprotective agent
+CHEBI:62868 # hepatoprotective agent
+CHEBI:76595 # nephoroprotective agent
+CHEBI:63726 # neeuroprotective agent
+CHEBI:66987 # radiation protective agent
+CHEBI:132992 # radiosensitizing agent
+CHEBI:49023 # prostagladin antagonist
+CHEBI:50689 # reproductive control drug
+CHEBI:50691 # abortifacient
+CHEBI:49323 # contraceptive drug
+CHEBI:73336 # vulnerary
+CHEBI:38867 # anaesthetic
+CHEBI:35470 # central nervous system drug
+CHEBI:50857 # anti-allergic agent
+CHEBI:65023 # anti-asthmatic agent
+CHEBI:49167 # anti-asthmatic drug
+CHEBI:50141 # bronchoconstrictor agent
+CHEBI:35523 # bronchodilator agent
+CHEBI:50514 # vasoconstrictor agent
+CHEBI:35620 # vasodilator agent
+CHEBI:51177 # antitussive
+CHEBI:35457 # EC 3.4.15.1 (peptidyl-dipeptidase A) inhibitor
+CHEBI:52425 # EC 3.2.1.18 (exo-alpha-sialidase) inhibitor
+CHEBI:65190 # first generation antipsychotic
+CHEBI:37930 # phenothiazine antipsychotic drug
+CHEBI:52217 # pharmaceutical
+CHEBI:47868 # photosensitizing agent
+CHEBI:86328 # antifungal agrochemical
+CHEBI:73182 # plant activator
+CHEBI:67079 # anti-inflammatory agent
+CHEBI:77964 # anticaking agent
+CHEBI:77965 # food anticaking agent
+CHEBI:75358 # curing agent
+CHEBI:79314 # flame retardant
+CHEBI:33292 # fuel
+CHEBI:77969 # food humectant
+CHEBI:79056 # plasticiser
+CHEBI:136859 # pro-agent
+CHEBI:50406 # probe
+CHEBI:63563 # oligosaccharide derivative
+CHEBI:71060 # amino octasaccharide
+CHEBI:22483 # amino oligosaccharide
+CHEBI:16916 # oligosaccharide phosphate
+CHEBI:35267 # quaternary ammonium ion
+CHEBI:83811 # proteinogenic amino acid derivative

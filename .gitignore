@@ -3,4 +3,9 @@ build/
 products/
 epitopes.txt
 nonpeptides.txt
+sources.txt
 util/old
+epitope_table.csv
+.tdb
+sheets
+util/queries/metrics

@@ -4,7 +4,7 @@ import rdflib, re, sys
 from rdflib import URIRef, RDFS, Literal, XSD
 
 def main(args):
-	'''Categorizes "other molecular entity" children as either organic or 
+	'''Categorizes "other chemical entity" children as either organic or 
 	   inorganic and moves them to the appropriate node.'''
 	input_path = args[1]
 	output_path = args[2]
@@ -19,15 +19,15 @@ def main(args):
 	gin.serialize(destination=output_path, format='turtle')
 
 def rehome_others(gin):
-	'''Queries for direct children of "other molecular entity" and "molecular 
+	'''Queries for direct children of "other chemical entity" and "chemical 
 	   entity" that have a formula annotation. Moves the classes to organic or 
 	   inorganic nodes.'''
 	print('Querying for \'other molecular entity\' children and their formulas')
 	query = '''SELECT DISTINCT ?s ?formula WHERE { {
-				  ?s rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_23367-other> ;
+				  ?s rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_24431-other> ;
 				     <http://purl.obolibrary.org/obo/chebi/formula> ?formula .
 				  } UNION {
-				  ?s rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_23367> ;
+				  ?s rdfs:subClassOf <http://purl.obolibrary.org/obo/CHEBI_24431> ;
 				     rdfs:label ?label .
 				  FILTER(STRSTARTS(?label, ">>"))
 				  ?c rdfs:subClassOf ?s ;
@@ -45,13 +45,16 @@ def rehome_others(gin):
 		else:
 			inorganic.append(iri)
 	assert_new_parents(gin, organic, inorganic)
+	# Remove all links to 'other chemical entity'
+	gin.remove((URIRef('http://purl.obolibrary.org/obo/CHEBI_24431-other'), None, None))
+	gin.remove((None, None, URIRef('http://purl.obolibrary.org/obo/CHEBI_24431-other')))
 
 def assert_new_parents(gin, organic, inorganic):
 	'''Asserts all IRIs in organic as children of "organic molecular entity" and
 	   all IRIs in inorganic as children of "inorganic molecular entity".'''
 	organic_uri = URIRef('http://purl.obolibrary.org/obo/CHEBI_50860-other')
 	inorganic_uri = URIRef('http://purl.obolibrary.org/obo/CHEBI_24835')
-	other_uri = URIRef('http://purl.obolibrary.org/obo/CHEBI_23367-other')
+	other_uri = URIRef('http://purl.obolibrary.org/obo/CHEBI_24431-other')
 
 	print('Moving %d classes to organic and %d classes to inorganic' 
 		  % (len(organic), len(inorganic)))

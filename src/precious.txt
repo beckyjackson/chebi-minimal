@@ -2,11 +2,76 @@ CHEBI:24431 # chemical entity
 CHEBI:50906 # role
 CHEBI:60004 # mixture
 CHEBI:50906-compound # compound
-CHEBI:33521 # metal atom
 CHEBI:24433 # group
-CHEBI:33250 # atom
-CHEBI:23367 # molecular entity
 CHEBI:24835 # inorganic molecular entity
 CHEBI:50860 # organic molecular entity
 CHEBI:16646 # carbohydrate
-http://iedb.org/source/orphaned_molecular_entity
+CHEBI:63367 # monosaccharide derivative
+CHEBI:63353 # disaccharide derivative
+CHEBI:63571 # trisaccharide derivative
+CHEBI:63567 # tetrasaccharide derivative
+CHEBI:63566 # pentasaccharide derivative
+CHEBI:63565 # hexasaccharide derivative
+CHEBI:63568 # heptasaccharide derivative
+CHEBI:65212 # polysaccharide derivative
+CHEBI:47916 # flavonoid
+CHEBI:35381 # monosaccharide
+CHEBI:36233 # disaccharide
+CHEBI:27150 # trisaccharide
+CHEBI:50126 # tetrasaccharide
+CHEBI:35369 # pentasaccharide
+CHEBI:35368 # hexasaccharide
+CHEBI:53463 # heptasaccharide
+CHEBI:61863 # octasaccharide
+CHEBI:18154 # polysaccharide
+CHEBI:63367 # monosaccharide derivative
+CHEBI:63353 # disaccharide derivative
+CHEBI:63571 # trisaccharide derivative
+CHEBI:63567 # tetrasaccharide derivative
+CHEBI:63566 # pentasaccharide derivative
+CHEBI:63565 # hexasaccharide derivative
+CHEBI:63568 # heptasaccharide derivative
+CHEBI:71061 # octasaccharide derivative
+CHEBI:65212 # polysaccharide derivative
+CHEBI:78616 # carbohydrates and carbohydrate derivatives
+CHEBI:22315 # alkaloid
+CHEBI:33659 # organic aromatic compound
+CHEBI:22278 # alanine derivative
+CHEBI:22617 # arginine derivative
+CHEBI:22654 # asparagine derivative
+CHEBI:22661 # aspartic acid derivative
+CHEBI:23509 # cysteine derivative
+CHEBI:24315 # glutamic acid derivative
+CHEBI:24599 # histidine derivative
+CHEBI:24899 # isoleucine derivative
+CHEBI:47003 # leucine derivative
+CHEBI:53079 # lysine derivative
+CHEBI:25230 # methionine derivative
+CHEBI:83812 # non-proteinogenic amino acid derivative
+CHEBI:25985 # phenylalanine derivative
+CHEBI:26273 # proline derivative
+CHEBI:84208 # selenocysteine derivative
+CHEBI:26649 # serine derivative
+CHEBI:26987 # threonine derivative
+CHEBI:27164 # tryptophan derivative
+CHEBI:27267 # valine derivative
+CHEBI:33261 # organosulfur compound
+CHEBI:25710 # organophosphorus compound
+CHEBI:36963 # organooxygen compound
+CHEBI:35352 # organonitrogen compound
+CHEBI:50996 # tertiary amino compound 
+CHEBI:33424 # sulfur oxoacid derivative
+CHEBI:26739 # sphingolipid
+CHEBI:36360 # phosphorus oxoacids and derivaties
+CHEBI:50047 # organic amino compound
+CHEBI:68452 # azole
+CHEBI:32952 # amine
+obo:IEDB_0000010 # monosaccharide or monosaccharide derivative
+obo:IEDB_0000011 # disaccharide or disaccharide derivative
+obo:IEDB_0000012 # trisaccharide or trisccharide derivative
+obo:IEDB_0000013 # tetrasaccharide or teetrasaccharide derivative
+obo:IEDB_0000014 # pentasaccharide or pentasaccharide derivative
+obo:IEDB_0000015 # hexasaccharide or hexasaccharide derivative
+obo:IEDB_0000016 # heptasaccharide or heptasaccharide derivative
+obo:IEDB_0000017 # octasaccharide or octasaccharide derivative
+obo:IEDB_0000018 # polysaccharide or polysaccharide derivative
