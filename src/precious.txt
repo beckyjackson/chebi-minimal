@@ -56,9 +56,6 @@ CHEBI:26987 # threonine derivative
 CHEBI:27164 # tryptophan derivative
 CHEBI:27267 # valine derivative
 CHEBI:33261 # organosulfur compound
-CHEBI:25710 # organophosphorus compound
-CHEBI:36963 # organooxygen compound
-CHEBI:35352 # organonitrogen compound
 CHEBI:50996 # tertiary amino compound 
 CHEBI:33424 # sulfur oxoacid derivative
 CHEBI:26739 # sphingolipid
